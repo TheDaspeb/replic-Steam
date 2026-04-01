@@ -1,52 +1,37 @@
 //  Punto de entrada de la aplicación  
 
 import promptSync from "prompt-sync";
-import { createGame, getGames } from "./services/service.js";
+import { createGameFromInput, deleteGame, getGames, updateGameFromInput } from "./services/service.js";
+import { FORMATS, GENRES } from "./validators/game.js";
 
 const prompt = promptSync({ sigint: true });
-
-const genres = ["Action", "Shooter", "Coop", "Adventure", "Horror"] as const;
-const formats = ["free-to-play", "pay"] as const;
 
 function showMenu(): void {
     console.log("\n=== Menu ===");
     console.log("1. Crear juego");
     console.log("2. Ver juegos");
-    console.log("3. Salir");
+    console.log("3. Actualizar juego");
+    console.log("4. Eliminar juego");
+    console.log("5. Salir");
 }
 
 function askCreateGame(): void {
     const name = prompt("Nombre del juego: ").trim();
     const genreInput = prompt(
-        "Genero (Action/Shooter/Coop/Adventure/Horror): "
+        `Genero (${GENRES.join("/")}): `
     ).trim();
     const launch = prompt("Fecha de lanzamiento (YYYY-MM-DD): ").trim();
-    const multiInput = prompt("Es multijugador? (si/no): ")
-        .trim()
-        .toLowerCase();
-    const formatInput = prompt("Formato (free-to-play/pay): ").trim();
-
-    if (!genres.includes(genreInput as (typeof genres)[number])) {
-        console.log("Genero invalido. Usa uno de:", genres.join(", "));
-        return;
-    }
-
-    if (!formats.includes(formatInput as (typeof formats)[number])) {
-        console.log("Formato invalido. Usa uno de:", formats.join(", "));
-        return;
-    }
-
-    const multi =
-        ["si", "sí", "s", "true", "1", "y", "yes"].includes(multiInput);
+    const multiInput = prompt("Es multijugador? (si/no): ").trim();
+    const formatInput = prompt(`Formato (${FORMATS.join("/")}): `).trim();
 
     try {
-        const game = createGame(
+        const game = createGameFromInput({
             name,
-            genreInput as (typeof genres)[number],
+            genre: genreInput,
             launch,
-            multi,
-            formatInput as (typeof formats)[number]
-        );
+            multi: multiInput,
+            format: formatInput
+        });
         console.log("Juego creado:", game);
     } catch (err) {
         console.log((err as Error).message);
@@ -62,6 +47,56 @@ function listGames(): void {
     console.table(games);
 }
 
+function askUpdateGame(): void {
+    const idInput = prompt("ID del juego a actualizar: ").trim();
+    const id = Number(idInput);
+    if (!Number.isInteger(id) || id <= 0) {
+        console.log("ID invalido.");
+        return;
+    }
+
+    const name = prompt("Nuevo nombre (deja vacio para mantener): ").trim();
+    const genreInput = prompt(
+        `Nuevo genero (${GENRES.join("/")}, vacio=mantener): `
+    ).trim();
+    const launch = prompt(
+        "Nueva fecha (YYYY-MM-DD, vacio=mantener): "
+    ).trim();
+    const multiRaw = prompt("Multijugador? (si/no, vacio=mantener): ").trim();
+    const formatInput = prompt(
+        `Nuevo formato (${FORMATS.join("/")}, vacio=mantener): `
+    ).trim();
+
+    try {
+        const updated = updateGameFromInput(id, {
+            name,
+            genre: genreInput,
+            launch,
+            multi: multiRaw,
+            format: formatInput
+        });
+        console.log("Juego actualizado:", updated);
+    } catch (err) {
+        console.log((err as Error).message);
+    }
+}
+
+function askDeleteGame(): void {
+    const idInput = prompt("ID del juego a eliminar: ").trim();
+    const id = Number(idInput);
+    if (!Number.isInteger(id) || id <= 0) {
+        console.log("ID invalido.");
+        return;
+    }
+
+    try {
+        const removed = deleteGame(id);
+        console.log("Juego eliminado:", removed);
+    } catch (err) {
+        console.log((err as Error).message);
+    }
+}
+
 let running = true;
 while (running) {
     showMenu();
@@ -75,6 +110,12 @@ while (running) {
             listGames();
             break;
         case "3":
+            askUpdateGame();
+            break;
+        case "4":
+            askDeleteGame();
+            break;
+        case "5":
             running = false;
             console.log("Hasta luego.");
             break;

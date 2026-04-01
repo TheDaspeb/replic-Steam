@@ -1,3 +1,4 @@
 import type { Game } from "../models/interfaces.js";
 export declare let Games: Game[];
+export declare function persistGames(): void;
 //# sourceMappingURL=data.d.ts.map
