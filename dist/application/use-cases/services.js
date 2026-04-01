@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteGame = exports.AddGame = exports.getAllGames = void 0;
-const data_1 = require("./data");
-const interactions_1 = require("./interactions");
+exports.updateGame = exports.deleteGame = exports.infoGame = exports.AddGame = exports.getAllGames = void 0;
+const data_1 = require("../../infrastructure/repositories/data");
+const interactions_1 = require("../../infrastructure/ui/interactions");
 const getAllGames = () => {
     return [...data_1.games];
 };
@@ -30,6 +30,20 @@ const AddGame = (nuevoJuego) => {
     console.log("============================\n");
 };
 exports.AddGame = AddGame;
+const infoGame = () => __awaiter(void 0, void 0, void 0, function* () {
+    const nuevoJuego = {
+        id: Number(yield interactions_1.rl.question("ID del juego: ")),
+        nombre: yield interactions_1.rl.question("Nombre del juego: "),
+        categoria: yield interactions_1.rl.question("Categoría (Accion/terror/shooter/carreras/coop/aventura/lucha/puzles): "),
+        costo: yield interactions_1.rl.question("Costo (pago/freetoplay): "),
+        lanzamiento: yield interactions_1.rl.question("Fecha de lanzamiento (YYYY-MM-DD): "),
+        descripcion: (yield interactions_1.rl.question("Descripción (opcional, presiona Enter para saltar): ")) || undefined,
+        multijugador: (yield interactions_1.rl.question("¿Multijugador? (si/no): ")).toLowerCase() === "si",
+        restriccion: Number(yield interactions_1.rl.question("Restricción de edad: "))
+    };
+    return nuevoJuego;
+});
+exports.infoGame = infoGame;
 const deleteGame = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const index = data_1.games.findIndex(juego => juego.id === id);
     if (index !== -1) {
@@ -57,3 +71,17 @@ const deleteGame = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.deleteGame = deleteGame;
+const updateGame = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const index = data_1.games.findIndex(juego => juego.id === id);
+    if (index !== -1) {
+        const updateInfo = yield (0, exports.infoGame)();
+        data_1.games[index] = Object.assign(Object.assign({}, updateInfo), { id });
+        console.log(`\n============================`);
+        console.log(`Juego con id ${id} actualizado`);
+        console.log(`============================\n`);
+    }
+    else {
+        console.log("Juego no encontrado");
+    }
+});
+exports.updateGame = updateGame;

@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.menu = menu;
-const interactions_1 = require("./interactions");
-const services_1 = require("./services");
+const interactions_1 = require("../infrastructure/ui/interactions");
+const services_1 = require("../application/use-cases/services");
 function menu() {
     return __awaiter(this, void 0, void 0, function* () {
         let opcion = "";

@@ -1,3 +1,3 @@
-import {menu} from "./menu"
+import {menu} from "./presentation/controllers/menu"
 
 menu()

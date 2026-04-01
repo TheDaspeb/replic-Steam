@@ -1,7 +1,7 @@
 export type Categoria = "Accion" | "terror" | "shooter" | "carreras" | "coop" | "aventura" | "lucha" | "puzles"
 export type Costo = "pago" | "freetoplay"
 
-export interface juego {
+export interface Game {
     id: number
     nombre: string
     categoria: Categoria
@@ -11,4 +11,3 @@ export interface juego {
     multijugador: boolean
     restriccion: number
 }
-

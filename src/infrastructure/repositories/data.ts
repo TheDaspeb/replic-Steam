@@ -1,7 +1,7 @@
-import { juego } from "./models";
+import { Game } from "../../domain/entities/models";
 
 
-export const games: juego[] = [
+export const games: Game[] = [
    {
         id: 1,
         nombre: "COD",
